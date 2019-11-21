@@ -14,9 +14,8 @@
 
     <!--主要样式-->
     <link rel="stylesheet" type="text/css" href="css/main.css">
-
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1405703_72t881qaqsa.css">
     <script src="js/base.js"></script>
-
     <style type="text/css">
         #canvas {
             position: absolute;
@@ -65,18 +64,14 @@
                 <div class="wrap-input100 validate-input m-b-10" data-validate="请输入用户名">
                     <input id="input_username" class="input100" type="text" placeholder="用户名">
                     <span class="focus-input100"></span>
-                    <span class="symbol-input100">
-                            <i class="fa fa-user"></i>
-                        </span>
+                    <span class="symbol-input100"><i class="iconfont iconpeople_fill"></i></span>
                 </div>
 
                 <div class="wrap-input100 validate-input m-b-10" data-validate="请输入密码">
                     <input id="input_password" class="input100" type="password" placeholder="密码" onpaste="return false"
                            oncontextmenu="return false" oncopy="return false" oncut="return false">
                     <span class="focus-input100"></span>
-                    <span class="symbol-input100">
-                            <i class="fa fa-lock"></i>
-                        </span>
+                    <span class="symbol-input100"><i class="iconfont iconlock_fill"></i></span>
                 </div>
 
                 <div class="container-login100-form-btn p-t-10">
@@ -84,14 +79,11 @@
                 </div>
 
                 <div class="text-center w-full p-t-25 p-b-230">
-                    <a href="#" onclick="getCookie('zing')" class="txt1">忘记密码？</a>
+                    <a href="#" class="txt1">忘记密码？</a>
                 </div>
 
                 <div class="text-center w-full">
-                    <a class="txt1" href="/register.html">
-                        立即注册
-                        <i class="fa fa-long-arrow-right"></i>
-                    </a>
+                    <a class="txt1" href="/register.html">立即注册</a>
                 </div>
             </form>
         </div>
@@ -102,23 +94,23 @@
 <script>
     //宇宙特效
     "use strict";
-    var canvas = document.getElementById("canvas");
-    var ctx = canvas.getContext("2d");
-    var w = canvas.width = window.innerWidth;
-    var h = canvas.height = window.innerHeight;
+    let canvas = document.getElementById("canvas");
+    let ctx = canvas.getContext("2d");
+    let w = canvas.width = window.innerWidth;
+    let h = canvas.height = window.innerHeight;
 
-    var hue = 217;
-    var stars = [];
-    var count = 0;
-    var maxStars = 1300; //星星数量
+    let hue = 217;
+    let stars = [];
+    let count = 0;
+    let maxStars = 1300; //星星数量
 
-    var canvas2 = document.createElement("canvas");
-    var ctx2 = canvas2.getContext("2d");
+    let canvas2 = document.createElement("canvas");
+    let ctx2 = canvas2.getContext("2d");
 
     canvas2.width = 100;
     canvas2.height = 100;
-    var half = canvas2.width / 2;
-    var gradient2 = ctx2.createRadialGradient(half, half, 0, half, half, half);
+    let half = canvas2.width / 2;
+    let gradient2 = ctx2.createRadialGradient(half, half, 0, half, half, half);
 
     gradient2.addColorStop(0.025, '#CCC');
     gradient2.addColorStop(0.1, 'hsl(' + hue + ', 61%, 33%)');
@@ -139,7 +131,7 @@
         }
 
         if (min > max) {
-            var hold = max;
+            let hold = max;
             max = min;
             min = hold;
         }
@@ -148,13 +140,13 @@
     }
 
     function maxOrbit(x, y) {
-        var max = Math.max(x, y),
+        let max = Math.max(x, y),
             diameter = Math.round(Math.sqrt(max * max + max * max));
         return diameter / 2;
         //星星移动范围，值越大范围越小，
     }
 
-    var Star = function () {
+    let Star = function () {
 
         this.orbitRadius = random(maxOrbit(w, h));
         this.radius = random(60, this.orbitRadius) / 8;
@@ -168,10 +160,10 @@
 
         count++;
         stars[count] = this;
-    }
+    };
 
     Star.prototype.draw = function () {
-        var x = Math.sin(this.timePassed) * this.orbitRadius + this.orbitX,
+        let x = Math.sin(this.timePassed) * this.orbitRadius + this.orbitX,
             y = Math.cos(this.timePassed) * this.orbitRadius + this.orbitY,
             twinkle = random(10);
 
@@ -184,9 +176,9 @@
         ctx.globalAlpha = this.alpha;
         ctx.drawImage(canvas2, x - this.radius / 2, y - this.radius / 2, this.radius, this.radius);
         this.timePassed += this.speed;
-    }
+    };
 
-    for (var i = 0; i < maxStars; i++) {
+    for (let i = 0; i < maxStars; i++) {
         new Star();
     }
 
@@ -194,13 +186,12 @@
         ctx.globalCompositeOperation = 'source-over';
         ctx.globalAlpha = 0.5; //尾巴
         ctx.fillStyle = 'hsla(' + hue + ', 64%, 6%, 2)';
-        ctx.fillRect(0, 0, w, h)
+        ctx.fillRect(0, 0, w, h);
 
         ctx.globalCompositeOperation = 'lighter';
-        for (var i = 1, l = stars.length; i < l; i++) {
+        for (let i = 1, l = stars.length; i < l; i++) {
             stars[i].draw();
         }
-        ;
 
         window.requestAnimationFrame(animation);
     }
@@ -213,7 +204,7 @@
     let input_username = document.getElementById("input_username");
     let input_password = document.getElementById("input_password");
 
-    var notPat1 = new RegExp(/[^0-9a-zA-Z@\\.]/g);
+    let notPat1 = new RegExp(/[^0-9a-zA-Z@\\.]/g);
 
     input_username.onchange = function () {
         this.value = this.value.replace(notPat1, '');
@@ -247,7 +238,7 @@
 
         let header = [{key: "username", value: username}, {key: "password", value: password}];
 
-        ajax("GET", "webapi/login/token", header, null, function (xmlHttpRequest, ev) {
+        ajax("GET", MOYU_URL.webapi.login, header, null, function (xmlHttpRequest, ev) {
             let type = xmlHttpRequest.getResponseHeader("Content-Type");
             if (type === 'application/json') {
                 let result = JSON.parse(xmlHttpRequest.responseText);
@@ -256,7 +247,7 @@
                 setCookie('userId', result.userId);
                 setCookie('token', result.token);
 
-                self.location.href="/vtest.html"
+                self.location.href = MOYU_URL.path.chat;
             } else {
                 console.log(xmlHttpRequest.responseText);
             }

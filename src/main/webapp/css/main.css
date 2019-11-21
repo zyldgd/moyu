@@ -302,7 +302,7 @@ iframe {
 }
 
 .input100 {
-    font-family: Montserrat-Bold;
+    font-family: 微软雅黑, sans-serif;
     font-size: 15px;
     line-height: 1.2;
     color: #333333;
@@ -312,8 +312,13 @@ iframe {
     height: 50px;
     border-radius: 25px;
     padding: 0 30px 0 53px;
+    font-weight: bolder;
 }
 
+
+.input100::-webkit-input-placeholder {
+    font-weight: lighter;
+}
 
 /*------------------------------------------------------------------
 [ Focus ]*/

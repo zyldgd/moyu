@@ -1,3 +1,20 @@
+var MOYU_URL = {
+    webapi: {
+        user: "webapi/user",
+        messages: "webapi/messages",
+        contacts: "webapi/contacts",
+        groups: "webapi/groups",
+        eventSource: "webapi/eventSource",
+        fileResource: "webapi/fileResource",
+        login: "webapi/login"
+    },
+    path: {
+        login: "login.html",
+        chat: "vtest.html"
+    }
+};
+
+
 String.prototype.format = function (args) {
     let result = this;
     if (arguments.length > 0) {
@@ -19,7 +36,8 @@ String.prototype.format = function (args) {
     }
     return result;
 };
-function initSys(){
+
+function initSys() {
     L2Dwidget.init({
         "model": {
             jsonPath: "https://unpkg.com/live2d-widget-model-tororo@1.0.5/assets/tororo.model.json",
@@ -65,11 +83,11 @@ function getCookie(key) {
 }
 
 function checkCookie() {
-    let username = getCookie('username')
+    let username = getCookie('username');
     if (username != null && username !== "") {
         alert('Welcome again ' + username + '!')
     } else {
-        username = prompt('Please enter your name:', "")
+        username = prompt('Please enter your name:', "");
         if (username != null && username !== "") {
             setCookie('username', username, 365)
         }
@@ -101,7 +119,7 @@ function axiosVerify() {
 
     axios({
         method: "GET",
-        url: '/webapi/login/test' + userId,
+        url: 'webapi/login/test' + userId,
         headers: {
             // 'Content-Type': 'application/x-www-form-urlencoded'
             'userId': userCache.userId,
@@ -124,7 +142,7 @@ function axiosGetUser(userCache, userId) {
     if (userId == null) return;
     axios({
         method: "GET",
-        url: '/webapi/user?userId=' + userId,
+        url: MOYU_URL.webapi.user + '?userId=' + userId,
         headers: {
             // 'Content-Type': 'application/x-www-form-urlencoded'
             'userId': userCache.userId,
@@ -133,8 +151,7 @@ function axiosGetUser(userCache, userId) {
     }).then(function (response) {
         if (response.status === 200) {
             userCache.setUsersMap([User.builder(response.data)]);
-            if (userId === userCache.userId)
-            {
+            if (userId === userCache.userId) {
                 userCache.selfUser = User.builder(response.data);
             }
         }
@@ -150,7 +167,7 @@ function axiosGetUser(userCache, userId) {
 function axiosGetContacts(userCache) {
     axios({
         method: "GET",
-        url: '/webapi/contacts',
+        url: MOYU_URL.webapi.contacts,
         headers: {
             'userId': userCache.userId,
             'token': userCache.token
@@ -183,7 +200,7 @@ function axiosSetMessage(userCache, message, callback) {
     console.log(data);
     axios({
         method: "POST",
-        url: '/webapi/messages',
+        url: MOYU_URL.webapi.messages,
         headers: {
             'userId': userCache.userId,
             'token': userCache.token
@@ -196,4 +213,38 @@ function axiosSetMessage(userCache, message, callback) {
     }).catch(function (error) {
         console.log(error);
     });
+}
+
+
+
+function initEventSource(userId, token, getNewMessageCallBack) {
+    if (typeof (EventSource) !== "undefined") {
+        let source = new EventSource(MOYU_URL.webapi.eventSource + "?userId=" + userId + "&token=" + token);
+
+        // 当通往服务器的连接被打开
+        source.onopen = function (event) {
+            console.log("eventSource opened!");
+        };
+
+        // 当接收到消息。只能是事件名称是 message
+        source.onmessage = function (event) {
+            let message = JSON.parse(event.data);
+            app_moyu.userCache.setMessages([Message.buildFrom(message)]);
+
+        };
+
+        //可以是任意命名的事件名称
+        // source.addEventListener('newMessage', function(event) {
+        //
+        // });
+
+        // 当错误发生
+        source.onerror = function (event) {
+            console.log(event);
+        };
+        return true;
+    } else {
+        alert("Sorry, your browser does not support server-sent events");
+        return false;
+    }
 }

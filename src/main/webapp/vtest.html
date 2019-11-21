@@ -13,7 +13,7 @@
     <script src="js/md5.js"></script>
     <script src="js/statusCodes.js"></script>
     <script src="js/chat.js"></script>
-    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1405703_y4upwed7u7.css">
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1405703_72t881qaqsa.css">
     <style type="text/css">
         * {
             margin: 0;
@@ -1163,40 +1163,7 @@
     }
 
 
-    function initEventSource(userId, token, getNewMessageCallBack) {
-        if (typeof (EventSource) !== "undefined") {
-            let source = new EventSource("webapi/eventSource?userId=" + userId + "&token=" + token);
 
-            // 当通往服务器的连接被打开
-            source.onopen = function (event) {
-                console.log("eventSource opened!");
-                console.log(event);
-            };
-
-            // 当接收到消息。只能是事件名称是 message
-            source.onmessage = function (event) {
-                console.log(event.data);
-                let message = JSON.parse(event.data);
-                console.log(message);
-                app_moyu.userCache.setMessages([Message.buildFrom(message)]);
-
-            };
-
-            //可以是任意命名的事件名称
-            // source.addEventListener('newMessage', function(event) {
-            //
-            // });
-
-            // 当错误发生
-            source.onerror = function (event) {
-                console.log(event);
-            };
-            return true;
-        } else {
-            alert("Sorry, your browser does not support server-sent events");
-            return false;
-        }
-    }
 
 
 </script>
