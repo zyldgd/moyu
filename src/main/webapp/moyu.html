@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:v-bind="http://www.w3.org/1999/xhtml" xmlns:v-for="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>摸鱼</title>
+    <script src="js/keyboard_shortcuts.js"></script>
+    <script src="js/statusCodes.js"></script>
+    <script src="js/base.js"></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1405703_m95c65jfl8o.css">
+    <style type="text/css">
+        * {
+            margin: 0;
+            border: 0;
+        }
+
+        ul, li, ol {
+            list-style: none;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            background: url("images/bg.jpg") no-repeat;
+            background-size: cover;
+        }
+
+        #moyu-main-warp {
+            top: 150px;
+            height: 650px;
+            width: 920px;
+            margin: 0 auto;
+            display: flex;
+            border: #000 1px solid;
+            box-shadow: #00000082 0 0 10px 0;
+            position: relative;
+        }
+
+        #left-warp {
+            height: 100%;
+            min-width: 220px;
+            width: 220px;
+            display: flex;
+            flex-direction: column;
+            background: #44546a;
+        }
+
+        #right-warp {
+            height: 100%;
+            min-width: 700px;
+            width: 700px;
+            display: flex;
+            flex-direction: column;
+            background: #dedede;
+        }
+
+        #left-warp-top {
+            width: 100%;
+            height: 200px;
+            min-height: 200px;
+            /*background: #b0f97b;*/
+            text-align: center;
+        }
+
+        #left-warp-middle {
+            width: 100%;
+            height: 40px;
+            min-height: 40px;
+            background: #303b4f;
+            display: flex;
+        }
+
+        #left-warp-bottom {
+            width: 100%;
+            height: 100%;
+            background: #303b4f;
+            overflow-y: auto;
+        }
+
+        #right-warp-top {
+            width: 100%;
+            height: 30px;
+            min-height: 30px;
+            display: flex;
+            line-height: 30px;
+        }
+
+        .right-warp-messageBox {
+            width: 100%;
+            height: 100%;
+            /*noinspection CssInvalidPropertyValue*/
+            overflow: overlay;
+            overflow-x: hidden;
+            /*background: #f99ab5;*/
+        }
+
+        #right-warp-tools {
+            width: 100%;
+            height: 30px;
+            min-height: 30px;
+            /*background: #f98ccf;*/
+        }
+
+        #right-warp-text {
+            width: 100%;
+            height: 100px;
+            min-height: 100px;
+            /*background: #f977ef;*/
+        }
+
+        #right-warp-bottom {
+            width: 100%;
+            height: 40px;
+            min-height: 40px;
+            /*background: #b660f9;*/
+        }
+
+        #user-warp-img {
+            width: 100%;
+        }
+
+        #user-warp-img img {
+            margin-top: 50px;
+            width: 80px;
+            height: 80px;
+            border: white 3px solid;
+            border-radius: 50%;
+            transition: box-shadow 0.5s, width 0.5s, height 0.5s, margin-top 0.5s;
+            cursor: pointer;
+        }
+
+        #user-warp-img img:hover {
+            margin-top: 40px;
+            width: 100px;
+            height: 100px;
+            box-shadow: #000000cc 0 0 10px 0;
+        }
+
+
+        #user-warp-info {
+            color: white;
+            margin-top: 5px;
+            font-weight: bold;
+            font-size: 17px;
+            font-family: 微软雅黑, sans-serif;
+        }
+
+        .left-warp-middle-select {
+            width: 100%;
+            height: 100%;
+        }
+
+        .left-warp-middle-select label {
+            width: 100%;
+            height: 100%;
+            color: #ffffff63;
+            line-height: 40px;
+            display: block;
+            text-align: center;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .iconfont {
+            font-size: 20px;
+        }
+
+        .left-warp-middle-select label:hover {
+            color: #ffffff93;
+        }
+
+        .left-warp-middle-select input {
+            display: none;
+        }
+
+        .left-warp-middle-select input:checked + label {
+            color: #fdfbff;
+        }
+
+        .list-item {
+            margin-top: 5px;
+            height: 60px;
+            width: 100%;
+            display: flex;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            /*background-color: #15394f;*/
+        }
+
+        .list-item:hover {
+            background-color: #3a475f;
+        }
+
+        .list-item input {
+            display: none;
+        }
+
+        .list-item label {
+            width: 100%;
+            height: 100%;
+        }
+
+        .list-item-left {
+            width: 60px;
+            min-width: 60px;
+        }
+
+
+        .list-item-left img {
+            width: 46px;
+            height: 46px;
+            margin-top: 7px;
+            margin-left: 12px;
+            border-radius: 50%;
+        }
+
+        .list-item-right {
+            width: 100%;
+        }
+
+        .list-item-right-title {
+            padding-top: 10px;
+            padding-left: 10px;
+            font-size: 14px;
+            color: white;
+            font-family: 微软雅黑, sans-serif;
+            font-weight: bold;
+
+        }
+
+        .list-item-right-name {
+            font-size: 14px;
+            color: white;
+            font-family: 微软雅黑, sans-serif;
+            font-weight: bold;
+            padding-left: 10px;
+        }
+
+        .list-item-right-name span {
+            display: block;
+            line-height: 60px;
+        }
+
+        .list-item-right-detail {
+            font-family: 微软雅黑, sans-serif;
+            padding-top: 5px;
+            font-size: 13px;
+            color: #ffffff99;
+            padding-left: 10px;
+        }
+
+        #top-title {
+            font-family: 微软雅黑, sans-serif;
+            font-weight: bold;
+            padding-left: 10px;
+            color: #b4b4b4;
+            /*text-shadow: #00000057 0 0 2px;*/
+        }
+
+
+        #right-warp-top-title {
+            width: 100%;
+        }
+
+        #right-warp-top-button {
+            min-width: 20px;
+            padding-right: 10px;
+            color: #b4b4b4;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        #right-warp-top-button:hover {
+            color: #898989;
+        }
+
+        #right-warp-tools {
+            color: #b4b4b4;
+            border-top: #cacaca 1px solid;
+        }
+
+        #right-warp-tools div {
+            display: inline-block;
+            transition: color 0.3s;
+            cursor: pointer;
+            margin: 3px 5px;
+        }
+
+        #right-warp-tools div:first-child {
+            margin-left: 10px;
+        }
+
+        #right-warp-tools div:hover {
+            color: #f9bb3c;
+        }
+
+        .tool-font {
+            font-size: 22px;
+        }
+
+        #text-send {
+            font-size: 15px;
+            overflow-y: auto;
+            width: 96%;
+            height: 80%;
+            margin: auto;
+            padding: 7px;
+            font-family: 微软雅黑, sans-serif;
+            outline: none;
+            background-color: white;
+            border-radius: 5px;
+            color: #6f6f6f;
+            white-space: pre-wrap;
+        }
+
+        #text-send img {
+            max-width: 50px;
+            max-height: 50px;
+        }
+
+        #right-warp-bottom {
+            text-align: right;
+        }
+
+        #button-send {
+            margin: 3px 13px 0 auto;
+            color: #576e8e;
+            width: 30px;
+            height: 30px;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        #button-send:hover {
+            color: #00b1ff;
+        }
+
+        .btn-send {
+            font-size: 30px;
+        }
+
+
+    </style>
+    <style type="text/css">
+        .scrollbar::-webkit-scrollbar { /*滚动条整体样式*/
+            width: 4px; /*高宽分别对应横竖滚动条的尺寸*/
+            height: 1px;
+        }
+
+        .scrollbar::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .scrollbar:hover::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+            background-color: #0000005c;
+        }
+
+        .scrollbar::-webkit-scrollbar-track { /*滚动条里面轨道*/
+        }
+
+    </style>
+    <style type="text/css">
+        .chat-list {
+            list-style: none;
+            padding: 0 10px;
+        }
+
+        .chat-line {
+            margin: 10px 0;
+            display: grid;
+            grid-template-columns: 70px auto;
+        }
+
+        .chat-avatar {
+            text-align: center;
+        }
+
+        .chat-content {
+            padding: 0 5px;
+        }
+
+        .chat-content-word {
+            display: inline-block;
+            min-width: 20px;
+            max-width: 500px;
+            border-radius: 3px;
+            background-color: white;
+            box-shadow: #00000014 0 0 6px 0;
+            padding: 7px 10px;
+            color: #656565;
+            word-break: break-all;
+        }
+
+        .chat-content-word pre {
+            font-family: 微软雅黑, sans-serif;
+            max-width: 470px;
+            font-size: 15px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .chat-avatar-img {
+            margin-top: 10px;
+            background: white;
+            border-radius: 50%;
+            width: 50px;
+        }
+
+        .chat-content-info {
+            padding: 2px;
+            color: #bdbdbd;
+            font-size: xx-small;
+        }
+
+        .chat-line-right {
+            margin: 10px 0;
+            display: grid;
+            grid-template-columns: auto 70px;
+        }
+
+        .chat-line-right .chat-content {
+            text-align: right;
+        }
+
+        .chat-line-right .chat-content-word {
+            margin: auto 0 0 auto;
+        }
+
+        .chat-line-right .chat-content-word {
+            text-align: left;
+            color: white;
+            background-color: #027991;
+        }
+
+        .chat-tip {
+            margin: 5px auto;
+            text-align: center;
+        }
+
+        .chat-tip span {
+            font-size: x-small;
+            color: #919191;
+            font-family: 微软雅黑, sans-serif;
+            background-color: #dddddd;
+            border-radius: 10px;
+        }
+
+
+    </style>
+</head>
+<body>
+<div id="moyu-main-warp">
+    <div id="left-warp">
+        <div id="left-warp-top">
+            <div id="user-warp">
+                <div id="user-warp-img" onclick="test(this)">
+                    <img src="images/avatar.jpeg" alt="头像"/>
+                </div>
+                <div id="user-warp-info">
+                    <span id="nickname-show">nickname</span>
+                </div>
+            </div>
+        </div>
+        <div id="left-warp-middle">
+            <div class="left-warp-middle-select">
+                <input id="select01" type="radio" name="select" checked="">
+                <label for="select01"><i class="iconfont iconxiaoxi"></i></label>
+            </div>
+            <div class="left-warp-middle-select">
+                <input id="select02" type="radio" name="select">
+                <label for="select02"><i class="iconfont iconziyuan"></i></label>
+            </div>
+            <div class="left-warp-middle-select">
+                <input id="select03" type="radio" name="select">
+                <label for="select03"><i class="iconfont icontongzhi"></i></label>
+            </div>
+        </div>
+        <div id="left-warp-bottom" class="scrollbar">
+            <div id="app">
+                <div v-for="contact in contacts" class="list-item">
+                    <div class="list-item-left">
+                        <img src="images/avatar.jpeg" alt="头像"/>
+                    </div>
+                    <div class="list-item-right">
+                        <div class="list-item-right-name">
+                            <span>{{ contact }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="list-item">
+                <div class="list-item-left">
+                    <img src="images/avatar.jpeg" alt="头像"/>
+                </div>
+                <div class="list-item-right">
+                    <div class="list-item-right-title">
+                        <span>SDN 摸鱼</span>
+                    </div>
+                    <div class="list-item-right-detail">
+                        <span> 123 </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="right-warp">
+        <div id="right-warp-top">
+            <div id="right-warp-top-title">
+                <span id="top-title">SDN 摸鱼</span>
+            </div>
+            <div id="right-warp-top-button">
+                <span><i class="iconfont iconweibiaoti15"></i></span>
+            </div>
+        </div>
+        <div class="right-warp-messageBox scrollbar">
+            <ul class="chat-list">
+                <li class="chat-tip">
+                    <span>123</span>
+                </li>
+                <li class="chat-line">
+                    <div class="chat-avatar">
+                        <img class="chat-avatar-img" src="images/avatar.jpeg" alt="头像">
+                    </div>
+                    <div class="chat-content">
+                        <div class="chat-content-info">阿斯顿</div>
+                        <div class="chat-content-word">
+                            <pre>敌以带我丢我达克赛德UI奥斯迪阿武哥</pre>
+                        </div>
+                    </div>
+                </li>
+                <li class="chat-line">
+                    <div class="chat-avatar">
+                        <img class="chat-avatar-img" src="images/avatar.jpeg" alt="头像">
+                    </div>
+                    <div class="chat-content">
+                        <div class="chat-content-info">阿斯顿</div>
+                        <div class="chat-content-word">
+                            <pre>敌以带我丢我达克赛德UI奥斯迪阿武哥</pre>
+                        </div>
+                    </div>
+                </li>
+                <li class="chat-line">
+                    <div class="chat-avatar">
+                        <img class="chat-avatar-img" src="images/avatar.jpeg" alt="头像">
+                    </div>
+                    <div class="chat-content">
+                        <div class="chat-content-info">阿斯顿</div>
+                        <div class="chat-content-word">
+                            <pre>敌以带我丢我达克赛德UI奥斯迪阿武哥</pre>
+                        </div>
+                    </div>
+                </li>
+                <li class="chat-line-right">
+                    <div class="chat-content">
+                        <div class="chat-content-info">阿斯顿</div>
+                        <div class="chat-content-word">
+                            <pre>asdasa</pre>
+                        </div>
+                    </div>
+                    <div class="chat-avatar">
+                        <img class="chat-avatar-img" src="images/avatar.jpeg" alt="头像">
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div id="right-warp-tools">
+            <div id="tool-faces" title="表情">
+                <span><i class="tool-font iconfont iconbiaoqing2"></i></span>
+            </div>
+            <div id="tool-favorite" title="收藏">
+                <span><i class="tool-font iconfont iconshoucang-"></i></span>
+            </div>
+            <div id="tool-file" title="上传">
+                <span><i class="tool-font iconfont iconweibiaoti5"></i></span>
+            </div>
+        </div>
+        <div id="right-warp-text">
+            <pre id="text-send" class="scrollbar" contenteditable="true"></pre>
+        </div>
+        <div id="right-warp-bottom" title="发送信息">
+            <div id="button-send"><i class="btn-send tool-font iconfont iconfasong"></i></div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-tororo@1.0.5/assets/tororo.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 150,
+            "height": 300,
+            "hOffset": 0,
+            "vOffset": -45
+        },
+        "mobile": {
+            "show": true,
+            "scale": 0.5
+        },
+        "react": {
+            "opacityDefault": 1,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+</body>
+<script>
+    String.prototype.format = function(args) {
+        let result = this;
+        if (arguments.length > 0) {
+            if (arguments.length === 1 && typeof (args) == "object") {
+                for (let key in args) {
+                    if(args[key]!==undefined){
+                        let reg = new RegExp("({" + key + "})", "g");
+                        result = result.replace(reg, args[key]);
+                    }
+                }
+            }
+            else {
+                for (let i = 0; i < arguments.length; i++) {
+                    if (arguments[i] !== undefined) {
+                        let reg= new RegExp("({)" + i + "(})", "g");
+                        result = result.replace(reg, arguments[i]);
+                    }
+                }
+            }
+        }
+        return result;
+    };
+</script>
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            contacts: ["1","2","3"]
+        }
+    });
+
+    function test(){
+        app.data.contacts.append(4);
+        add_chat_line(app.data.contacts);
+    }
+
+
+
+
+    function add_chat_line(self, user_avatar_src, username, message) {
+        let chat_list = document.getElementById("chat-list");
+        let li_list = document.createElement("li");
+        let div_avatar = document.createElement("div");
+        let img_avatar = document.createElement("img");
+        let div_content = document.createElement("div");
+        let div_info = document.createElement("div");
+        let div_word = document.createElement("div");
+        let pre = document.createElement("pre");
+
+        if (self === true) {
+            li_list.classList.add("chat-line-right");
+        } else {
+            li_list.classList.add("chat-line");
+        }
+
+        div_avatar.classList.add("chat-avatar");
+        img_avatar.classList.add("chat-avatar-img");
+        div_content.classList.add("chat-content");
+        div_info.classList.add("chat-content-info");
+        div_word.classList.add("chat-content-word");
+
+        img_avatar.src = user_avatar_src;
+        div_info.innerText = username;
+        pre.innerText = message;
+
+        div_word.appendChild(pre);
+        div_avatar.appendChild(img_avatar);
+        div_content.appendChild(div_info);
+        div_content.appendChild(div_word);
+        if (self === true) {
+            li_list.appendChild(div_content);
+            li_list.appendChild(div_avatar);
+
+        } else {
+            li_list.appendChild(div_avatar);
+            li_list.appendChild(div_content);
+        }
+
+        chat_list.appendChild(li_list);
+        document.getElementById("mid-warp").scrollTop = document.getElementById("mid-warp").scrollHeight;
+    }
+</script>
+</html>

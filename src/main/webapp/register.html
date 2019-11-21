@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>摸鱼-注册</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            border: 0;
+        }
+
+
+        .container {
+            box-shadow: #0000008c 4px 4px 4px 0;
+            width: 330px;
+            margin: 0 auto;
+            padding: 50px 70px;
+            background: #ffffff;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            background: #3a3a3a;
+        }
+
+        .title {
+            text-align: center;
+            color: #0085f9;
+        }
+
+        .main-warp {
+            padding-top: 100px;
+            /*background: #8c8c8c;*/
+        }
+
+        .input-warp {
+            margin: 5px;
+        }
+
+        .input-warp label {
+            display: block;
+            font-size: 15px;
+            font-weight: lighter;
+            margin: 35px 0 0 0;
+            color: #8c8c8c;
+        }
+
+
+        .input-warp input {
+            display: block;
+            color: #383838;
+            font-size: medium;
+            font-weight: 200;
+            width: 100%;
+            border: none;
+            transition: border-color 0.4s;
+            border-bottom: 2px solid #d4d4d4;
+            outline: none;
+            padding: 10px 0;
+        }
+
+        .input-warp input:hover {
+            border-bottom-color: #37a1ea;
+        }
+
+        .input-warp input:focus {
+            border-bottom-color: #1f76ea;
+        }
+
+        .input-warp span {
+            color: #f0543d;
+        }
+
+        #input-register {
+            outline: none;
+            cursor: pointer;
+            padding: 10px 0;
+            margin: 40px auto 0 auto;
+            width: 100%;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 35px;
+            color: white;
+            background: #37a1ea;
+            transition: background 1s;
+        }
+
+        #input-register:hover {
+            background: #1f76ea;
+        }
+
+
+    </style>
+    <script src="js/statusCodes.js"></script>
+</head>
+<body>
+<div class="main-warp">
+    <div class="container">
+        <h2 class="title">注 册 新 用 户</h2>
+        <div class="form-warp">
+            <div class="input-warp">
+                <label>昵称 <span>*</span></label>
+                <input type="text" id="input-nickname" maxlength="16"/>
+            </div>
+            <div class="input-warp">
+                <label>用户名 <span>*</span></label>
+                <input type="text" id="input-username" maxlength="16"/>
+            </div>
+            <div class="input-warp">
+                <label>密码 <span>*</span></label>
+                <input type="password" id="input-password1" maxlength="16"/>
+            </div>
+            <div class="input-warp">
+                <label>确认密码 <span>*</span></label>
+                <input type="password" id="input-password2" maxlength="16"/>
+            </div>
+            <div class="input-warp">
+                <label>邮箱</label>
+                <input type="email" id="input-email" maxlength="64"/>
+            </div>
+
+            <div class="input-warp">
+                <button type="button" onclick="register()" id="input-register">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+    let input_nickname = document.getElementById("input-nickname");
+    let input_username = document.getElementById("input-username");
+    let input_password1 = document.getElementById("input-password1");
+    let input_password2 = document.getElementById("input-password2");
+    let input_email = document.getElementById("input-email");
+
+
+    bind([input_username, input_password1, input_password2, input_email], new RegExp(/[^0-9a-zA-Z`!@#$%^&~*(){}|?":;',.<>_=+\-/\[\]]/));
+
+    function bind(arrE, notRegExp) {
+        arrE.forEach(function (item, index) {
+            item.onchange = function () {
+                this.value = this.value.replace(notRegExp, '');
+            };
+            item.onkeyup = function () {
+                this.value = this.value.replace(notRegExp, '');
+            };
+        })
+    }
+
+    let CCC = 0;
+
+    function register() {
+        let nickname = input_nickname.value.trim();
+        let username = input_username.value;
+        let password1 = input_password1.value;
+        let password2 = input_password2.value;
+        let email = input_email.value;
+
+        if (nickname === "" || username === "" || password1 === "" || password2 === "") {
+            alert("请填写必要信息！");
+            return;
+        }
+
+        if (password2 !== password1) {
+            alert("密码输入不一致");
+            return;
+        }
+
+        let user = {
+            userId: null,
+            username: username,
+            nickname: nickname,
+            password: password1,
+            email: email,
+            avatarPath: null,
+            remark: null,
+            grade: null
+        };
+
+
+        let header = [{key: "Content-Type", value: 'application/json'}];
+        let data = JSON.stringify(user);
+
+        ajax("POST", "webapi/user", header, data, function (xmlHttpRequest, ev) {
+            // let type = xmlHttpRequest.getResponseHeader("Content-Type");
+            // if (type !== 'application/json') {
+            //     console.log(xmlHttpRequest.responseText);
+            // }
+            // let result = JSON.parse(xmlHttpRequest.responseText);
+            // console.log(result);
+
+            if (xmlHttpRequest.readyState === 4) {
+                console.log(CCC++);
+                switch (xmlHttpRequest.status) {
+                    case StatusCode.OK:
+                        alert("注册成功！");
+                        self.location.href = "/login.html";
+                        break;
+                    case StatusCode.Conflict:
+                        alert("该用户名已存在！");
+                        break;
+                    case StatusCode.NotFound:
+                        alert("提交失败");
+                        break;
+                    default:
+                        console.log(xmlHttpRequest.responseXML)
+                }
+            }
+        });
+
+
+    }
+
+    function ajax(method, url, header, data, callback) {
+        let xmlHttpRequest;
+        if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlHttpRequest = new XMLHttpRequest();
+        } else {// code for IE6, IE5
+            xmlHttpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlHttpRequest.timeout = 5000;
+        xmlHttpRequest.ontimeout = function (ev) {
+            alert("请求超时！");
+        };
+        xmlHttpRequest.open(method, url, true);
+
+        if (header !== null) {
+            header.forEach(function (item, index) {
+                xmlHttpRequest.setRequestHeader(item.key, item.value);
+            });
+        }
+
+        console.log(data);
+        xmlHttpRequest.send(data);
+        xmlHttpRequest.onreadystatechange = function (ev) {
+            callback(xmlHttpRequest, ev);
+        };
+    }
+</script>
+</html>

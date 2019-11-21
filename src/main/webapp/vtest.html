@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:v-bind="http://www.w3.org/1999/xhtml" xmlns:v-for="http://www.w3.org/1999/xhtml"
+      xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>摸鱼</title>
+    <script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.14.1/lodash.min.js"></script>-->
+    <script src="js/keyboard_shortcuts.js"></script>
+    <script src="js/base.js"></script>
+    <script src="js/md5.js"></script>
+    <script src="js/statusCodes.js"></script>
+    <script src="js/chat.js"></script>
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1405703_y4upwed7u7.css">
+    <style type="text/css">
+        * {
+            margin: 0;
+            border: 0;
+        }
+
+        ul, li, ol {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            background: url("images/bg.jpg") no-repeat;
+            background-size: cover;
+        }
+
+        button{
+            cursor: pointer;
+            padding: 0;
+            outline: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .moyu-main-warp {
+            top: 150px;
+            height: 650px;
+            width: 920px;
+            margin: 0 auto;
+            display: flex;
+            /*border: #000 1px solid;*/
+            box-shadow: #00000082 0 0 10px 0;
+            position: relative;
+            transition: filter 0.3s;
+        }
+
+        .left-warp {
+            height: 100%;
+            min-width: 220px;
+            width: 220px;
+            display: flex;
+            flex-direction: column;
+            background: #44546a;
+        }
+
+        .right-warp {
+            height: 100%;
+            min-width: 700px;
+            width: 700px;
+            display: flex;
+            flex-direction: column;
+            background: #dedede;
+        }
+
+        .left-warp-top {
+            width: 100%;
+            height: 200px;
+            min-height: 200px;
+            /*background: #b0f97b;*/
+            text-align: center;
+        }
+
+        .left-warp-middle {
+            width: 100%;
+            height: 40px;
+            min-height: 40px;
+            background: #303b4f;
+            display: flex;
+        }
+
+        .left-warp-bottom {
+            width: 100%;
+            height: 100%;
+            background: #303b4f;
+            overflow-y: auto;
+        }
+
+        .right-warp-top {
+            width: 100%;
+            height: 30px;
+            min-height: 30px;
+            display: flex;
+            line-height: 30px;
+        }
+
+        .right-warp-messageBox {
+            width: 100%;
+            height: 100%;
+            /*noinspection CssInvalidPropertyValue*/
+            overflow: overlay;
+            overflow-x: hidden;
+            /*background: #f99ab5;*/
+        }
+
+        .right-warp-tools {
+            width: 100%;
+            height: 30px;
+            min-height: 30px;
+            /*background: #f98ccf;*/
+        }
+
+        .right-warp-text {
+            width: 100%;
+            height: 100px;
+            min-height: 100px;
+            /*background: #f977ef;*/
+        }
+
+        .right-warp-bottom {
+            width: 100%;
+            height: 40px;
+            min-height: 40px;
+            /*background: #b660f9;*/
+        }
+
+        .user-warp-img {
+            width: 100%;
+        }
+
+        .user-warp-img img {
+            margin-top: 50px;
+            width: 80px;
+            height: 80px;
+            border: white 3px solid;
+            border-radius: 50%;
+            transition: box-shadow 0.5s, width 0.5s, height 0.5s, margin-top 0.5s;
+            cursor: pointer;
+        }
+
+        .user-warp-img img:hover {
+            margin-top: 40px;
+            width: 100px;
+            height: 100px;
+            box-shadow: #000000cc 0 0 10px 0;
+        }
+
+
+        .user-warp-info {
+            color: white;
+            margin-top: 5px;
+            font-weight: bold;
+            font-size: 17px;
+            font-family: 微软雅黑, sans-serif;
+        }
+
+        .nickname-show {
+            text-overflow: ellipsis;
+        }
+
+        .left-warp-middle-select {
+            width: 100%;
+            height: 100%;
+        }
+
+        .left-warp-middle-select label {
+            width: 100%;
+            height: 100%;
+            color: #ffffff63;
+            line-height: 40px;
+            display: block;
+            text-align: center;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .iconfont {
+            font-size: 20px;
+        }
+
+        .left-warp-middle-select label:hover {
+            color: #ffffff93;
+        }
+
+        .left-warp-middle-select input {
+            display: none;
+        }
+
+        .left-warp-middle-select input:checked + label {
+            color: #fdfbff;
+        }
+
+        .list-item {
+            margin-top: 5px;
+            height: 60px;
+            width: 100%;
+            display: flex;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            /*background-color: #15394f;*/
+        }
+
+        .list-item:hover {
+            background-color: #3a475f;
+        }
+
+        .list-item input {
+            display: none;
+        }
+
+        .list-item label {
+            width: 100%;
+            height: 100%;
+        }
+
+        .list-item-left {
+            width: 60px;
+            min-width: 60px;
+        }
+
+
+        .list-item-left img {
+            width: 46px;
+            height: 46px;
+            margin-top: 7px;
+            margin-left: 12px;
+            border-radius: 50%;
+        }
+
+        .list-item-right {
+            width: 100%;
+        }
+
+        .list-item-right-title {
+            padding-top: 10px;
+            padding-left: 10px;
+            font-size: 14px;
+            color: white;
+            font-family: 微软雅黑, sans-serif;
+            font-weight: bold;
+
+        }
+
+        .list-item-right-name {
+            font-size: 14px;
+            color: white;
+            font-family: 微软雅黑, sans-serif;
+            font-weight: bold;
+            padding-left: 10px;
+        }
+
+        .list-item-right-name span {
+            display: block;
+            line-height: 60px;
+        }
+
+        .list-item-right-detail {
+            font-family: 微软雅黑, sans-serif;
+            padding-top: 5px;
+            font-size: 13px;
+            color: #ffffff99;
+            padding-left: 10px;
+        }
+
+        .top-title {
+            font-family: 微软雅黑, sans-serif;
+            font-weight: bold;
+            padding-left: 10px;
+            color: #b4b4b4;
+            /*text-shadow: #00000057 0 0 2px;*/
+        }
+
+
+        .right-warp-top-title {
+            width: 100%;
+        }
+
+        .right-warp-top-button {
+            min-width: 20px;
+            padding-right: 10px;
+            color: #b4b4b4;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .right-warp-top-button:hover {
+            color: #898989;
+        }
+
+        .right-warp-tools {
+            color: #b4b4b4;
+            border-top: #cacaca 1px solid;
+        }
+
+        .right-warp-tools div {
+            display: inline-block;
+            transition: color 0.3s;
+            cursor: pointer;
+            margin: 3px 5px;
+        }
+
+        .right-warp-tools div:first-child {
+            margin-left: 10px;
+        }
+
+        .right-warp-tools div:hover {
+            color: #f9bb3c;
+        }
+
+        .tool-font {
+            font-size: 22px;
+        }
+
+        .text-send {
+            font-size: 15px;
+            overflow-y: auto;
+            width: 96%;
+            height: 80%;
+            margin: auto;
+            padding: 7px;
+            font-family: 微软雅黑, sans-serif;
+            outline: none;
+            background-color: white;
+            border-radius: 5px;
+            color: #6f6f6f;
+            white-space: pre-wrap;
+        }
+
+        .text-send img {
+            max-width: 50px;
+            max-height: 50px;
+        }
+
+        .right-warp-bottom {
+            text-align: right;
+        }
+
+        .button-send {
+            margin: 0 13px 0 auto;
+            color: #576e8e;
+            width: 30px;
+            height: 30px;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .button-send:hover {
+            color: #00b1ff;
+        }
+
+        .btn-send {
+            font-size: 30px;
+        }
+
+
+    </style>
+    <style type="text/css">
+        .scrollbar::-webkit-scrollbar { /*滚动条整体样式*/
+            width: 4px; /*高宽分别对应横竖滚动条的尺寸*/
+            height: 1px;
+        }
+
+        .scrollbar::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .scrollbar:hover::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+            background-color: #0000005c;
+        }
+
+        .scrollbar::-webkit-scrollbar-track { /*滚动条里面轨道*/
+        }
+
+    </style>
+    <style type="text/css">
+        .chat-list {
+            list-style: none;
+            padding: 0 10px;
+        }
+
+        .chat-line {
+            margin: 10px 0;
+            display: grid;
+            grid-template-columns: 70px auto;
+        }
+
+        .chat-avatar {
+            text-align: center;
+        }
+
+        .chat-content {
+            padding: 0 5px;
+        }
+
+        .chat-content-word {
+            display: inline-block;
+            min-width: 20px;
+            max-width: 500px;
+            border-radius: 3px;
+            background-color: white;
+            box-shadow: #00000014 0 0 6px 0;
+            padding: 7px 10px;
+            color: #656565;
+            word-break: break-all;
+        }
+
+        .chat-content-word pre {
+            font-family: 微软雅黑, sans-serif;
+            max-width: 470px;
+            font-size: 15px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .chat-avatar-img {
+            box-shadow: #00000014 0 0 6px 0;
+            margin-top: 10px;
+            background: white;
+            border-radius: 50%;
+            width: 50px;
+        }
+
+        .chat-content-info {
+            padding: 2px;
+            color: #bdbdbd;
+            font-size: xx-small;
+            min-height: 16px;
+        }
+
+        .chat-line-right {
+            margin: 10px 0;
+            display: grid;
+            grid-template-columns: auto 70px;
+        }
+
+        .chat-line-right .chat-content {
+            text-align: right;
+        }
+
+        .chat-line-right .chat-content-word {
+            margin: auto 0 0 auto;
+        }
+
+        .chat-line-right .chat-content-word {
+            text-align: left;
+            color: white;
+            background-color: #44546a;
+        }
+
+        .chat-content-word img {
+            max-height: 150px;
+            max-width: 150px;
+        }
+
+        .chat-tip {
+            margin: 5px auto;
+            text-align: center;
+        }
+
+        .chat-tip span {
+            font-size: x-small;
+            color: #919191;
+            font-family: 微软雅黑, sans-serif;
+            background-color: #dddddd;
+            border-radius: 10px;
+        }
+
+        @keyframes bounce-in {
+            0% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            100% {
+                opacity: 100%;
+                transform: scale(1);
+            }
+        }
+
+
+        .list-enter-active {
+            animation: bounce-in 0.5s;
+        }
+
+        .list-leave-active {
+            animation: bounce-in 0.5s reverse;
+        }
+
+
+    </style>
+    <style type="text/css">
+
+        .blured {
+            filter: blur(10px);
+        }
+
+        .pop-warp {
+            height: 100%;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 200;
+            background: rgba(0, 0, 0, 0.56) !important;
+            filter: Alpha(opacity=56);
+        }
+
+        .pop-close {
+            text-align: right;
+        }
+
+        .pop-close button:hover{
+            color: #b6b6b6;
+        }
+
+        .pop-close button{
+            margin: 5px 5px 0 auto;
+            color: #cacaca;
+            background-color: #00000000;
+        }
+
+        .pop-child-user-warp {
+            position: relative;
+            width: 250px;
+            padding-bottom: 15px;
+            margin: auto;
+            top: 20%;
+            background: #FFFFFF;
+            border-radius: 4px;
+            z-index: 250;
+        }
+
+        .pop-child-user {
+
+        }
+
+        .pop-child-user-name {
+            text-align: center;
+            font-family: 微软雅黑, sans-serif;
+            font-weight: bold;
+            color: #c7c7c7;
+            margin-top: 8px;
+        }
+
+        .pop-child-user-image {
+            width: 100%;
+            text-align: center;
+        }
+
+        .pop-child-user-image img {
+            width: 120px;
+            height: 120px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: #000000a6 0 0 5px 0;
+        }
+
+        .pop-child-user-info {
+            font-size: small;
+        }
+
+
+        .pop-child-user-image img:hover {
+        }
+
+        .pop-child-user-info-line {
+            text-align: center;
+            margin: 15px auto 0 auto;
+        }
+
+        .pop-child-user-info-line label {
+            display: inline-block;
+            color: #898989;
+            font-family: 微软雅黑, sans-serif;
+        }
+
+
+        .pop-child-user-info-line input {
+            color: #898989;
+            width: 90px;
+            font-family: 微软雅黑, sans-serif;
+            display: inline-block;
+            background: none;
+            outline: none;
+            border: none;
+            text-overflow: ellipsis;
+        }
+
+
+
+        #modify-nickname:hover::-webkit-input-placeholder,
+        #modify-email:hover::-webkit-input-placeholder,
+        #modify-password:hover::-webkit-input-placeholder {
+            color: #34b4fb;
+        }
+
+        #modify-nickname:hover,
+        #modify-password:hover,
+        #modify-email:hover {
+            cursor: pointer;
+            color: #34b4fb;
+        }
+
+        #pop-child-add-contact{
+            margin-top: 15px;
+            padding: 5px 40px;
+            background-color: #86c400;
+            border-radius: 20px;
+            color: white;
+        }
+
+        #pop-child-add-contact:hover{
+            background-color: #9de500;
+        }
+
+        /**********************************************************/
+
+
+        .pop-child-user-info-line span{
+            color: #898989;
+            font-family: 微软雅黑, sans-serif;
+            display: inline-block;
+            text-align: left;
+            overflow:hidden;
+        }
+
+
+        .pop-child-span-title{
+        }
+
+        .pop-child-span-content{
+            width: 90px;
+            text-overflow: ellipsis;
+            white-space:nowrap;
+            overflow:hidden;
+        }
+
+
+    </style>
+</head>
+<body>
+<div id="app-moyu">
+    <div class="pop-warp"  v-if="popShow">
+        <div class="pop-child-user-warp" v-if="false" >
+            <div class="pop-close">
+                <button v-on:click="showUserInfo()"><i style="font-size: 10px" class="iconfont iconguanbi"></i></button>
+            </div>
+            <div class="pop-child-user">
+                <div class="pop-child-user-image">
+                    <img alt="头像" title="点击修改头像" src="images/avatar.jpeg">
+                </div>
+                <div class="pop-child-user-name">
+                    <span>ping</span>
+                </div>
+                <div class="pop-child-user-info">
+                    <div class="pop-child-user-info-line">
+                        <label>账号：</label>
+                        <span>ping</span>
+                    </div>
+                    <div class="pop-child-user-info-line">
+                        <label>昵称：</label>
+                        <input id="modify-nickname" type="text" value="pingping" title="点击修改昵称"/>
+                    </div>
+                    <div class="pop-child-user-info-line">
+                        <label>密码：</label>
+                        <input id="modify-password" type="password" placeholder="******" title="点击修改密码"/>
+                    </div>
+                    <div class="pop-child-user-info-line">
+                        <label>邮箱：</label>
+                        <input id="modify-email" type="text" value="pingping" title="点击修改邮箱"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pop-child-user-warp" v-if="popUserInfoShow" >
+            <div class="pop-close">
+                <button v-on:click="showUserInfo()"><i style="font-size: 10px" class="iconfont iconguanbi"></i></button>
+            </div>
+            <div class="pop-child-user">
+                <div class="pop-child-user-image">
+                    <img alt="头像" src="images/avatar.jpeg">
+                </div>
+                <div class="pop-child-user-info">
+                    <div class="pop-child-user-info-line">
+                        <span class="pop-child-span-title">账号：</span>
+                        <span class="pop-child-span-content">100000</span>
+                    </div>
+                    <div class="pop-child-user-info-line">
+                        <span class="pop-child-span-title">昵称：</span>
+                        <span class="pop-child-span-content">ping</span>
+                    </div>
+                    <div class="pop-child-user-info-line">
+                        <span class="pop-child-span-title">邮箱：</span>
+                        <span class="pop-child-span-content">1111@qq.com</span>
+                    </div>
+                    <div class="pop-child-user-info-line">
+                        <button id="pop-child-add-contact"><i style="font-size: 10px" class="iconfont icontianjia"></i> 添加好友 </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="chat-windows" class="moyu-main-warp">
+        <div class="left-warp">
+            <div class="left-warp-top">
+                <div class="user-warp">
+                    <div class="user-warp-img" v-on:click="showUserInfo()">
+                        <img src="images/avatar.jpeg" alt="头像"/>
+                    </div>
+                    <div class="user-warp-info">
+                        <span class="nickname-show">{{userCache.selfUser.nickname}}</span>
+                    </div>
+                </div>
+
+            </div>
+            <div class="left-warp-middle">
+                <div class="left-warp-middle-select">
+                    <input id="select01" type="radio" name="select" checked="">
+                    <label for="select01"><i class="iconfont iconxiaoxi"></i></label>
+                </div>
+                <div class="left-warp-middle-select">
+                    <input id="select02" type="radio" name="select">
+                    <label for="select02"><i class="iconfont iconziyuan"></i></label>
+                </div>
+                <div class="left-warp-middle-select">
+                    <input id="select03" type="radio" name="select">
+                    <label for="select03"><i class="iconfont icontongzhi"></i></label>
+                </div>
+            </div>
+            <div class="left-warp-bottom scrollbar">
+                <div>
+                    <div class="list-item" v-for="contact in userCache.contactsMap.values()"
+                         v-on:click="selectDialog(contact)">
+                        <div class="list-item-left">
+                            <img src="images/avatar.jpeg" alt=""/>
+                        </div>
+                        <div class="list-item-right">
+                            <div class="list-item-right-name">
+                                <span>{{ contact.remarkName === null ? contact.contactId :  contact.remarkName }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-warp">
+            <div class="right-warp-top">
+                <div class="right-warp-top-title">
+                    <span class="top-title">{{userCache.curDialogID}}</span>
+                    <button v-on:click="addEE()">+</button>
+                    <button v-on:click="addEEE()">+</button>
+                    <button v-on:click="addEEEE()">+</button>
+                </div>
+                <div class="right-warp-top-button">
+                    <span><i class="iconfont iconweibiaoti15"></i></span>
+                </div>
+            </div>
+            <div id="MessagesBox" class="right-warp-messageBox scrollbar">
+                <p hidden>{{ userCache.trigger }}</p>
+                <div class="chat-list">
+                    <template v-for="key in userCache.messagesMap.keys()">
+                        <div v-bind:class="{hidden: (key != userCache.curDialogID)}">
+                            <transition-group name="list" v-on:before-enter="listBeforeEnter" v-on:enter="listEnter">
+                                <!--<div v-for="(message, index) in userCache.messagesMap.get(key)" v-bind:key="index">-->
+                                <ul v-for="(message, index) in userCache.messagesMap.get(key)" v-bind:key="index">
+                                    <li class="chat-tip" v-if="message.showType == 'tip'">
+                                        <span>{{message.content}}</span>
+                                    </li>
+                                    <li class="chat-line"
+                                        v-if="message.showType == 'message' && userCache.userId != message.from">
+                                        <div class="chat-avatar">
+                                            <img class="chat-avatar-img" src="images/avatar.jpeg" alt="头像">
+                                        </div>
+                                        <div class="chat-content">
+                                            <div class="chat-content-info">{{message.from}}</div>
+                                            <div class="chat-content-word">
+                                                <pre v-html="message.content">{{message.content}}</pre>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="chat-line-right"
+                                        v-if="message.showType == 'message' && userCache.userId == message.from">
+                                        <div class="chat-content">
+                                            <div class="chat-content-info">&nbsp;</div>
+                                            <div class="chat-content-word">
+                                                <pre v-html="message.content">{{message.content}}</pre>
+                                            </div>
+                                        </div>
+                                        <div class="chat-avatar">
+                                            <img class="chat-avatar-img" src="images/avatar.jpeg" alt="头像">
+                                        </div>
+                                    </li>
+                                </ul>
+                            </transition-group>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            <div class="right-warp-tools">
+                <div class="tool-faces" title="表情">
+                    <span><i class="tool-font iconfont iconbiaoqing2"></i></span>
+                </div>
+                <div class="tool-favorite" title="收藏">
+                    <span><i class="tool-font iconfont iconshoucang-"></i></span>
+                </div>
+                <div class="tool-file" title="上传">
+                    <span><i class="tool-font iconfont iconweibiaoti5"></i></span>
+                </div>
+            </div>
+            <div class="right-warp-text">
+                <pre id="sendMessageText" class="text-send scrollbar" contenteditable="true"></pre>
+            </div>
+            <div class="right-warp-bottom" title="发送信息">
+                <div class="button-send" v-on:click="sendMessage('sendMessageText')"><i
+                        class="btn-send tool-font iconfont iconfasong"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+
+<script>
+    var AUTOSCROLL = true;
+
+    function beforeAutoScrollToBottom() {
+        let MessagesBox = document.getElementById("MessagesBox");
+        AUTOSCROLL = ((MessagesBox.scrollHeight - MessagesBox.clientHeight - MessagesBox.scrollTop) < 10);
+    }
+
+    function autoScrollToBottom() {
+        let MessagesBox = document.getElementById("MessagesBox");
+        if (AUTOSCROLL) {
+            MessagesBox.scrollTop = MessagesBox.scrollHeight;
+        }
+
+    }
+
+    class User {
+        userId = null;
+        username = null;
+        password = null;
+        nickname = null;
+        email = null;
+        avatarPath = null;
+        remark = null;
+        grade = null;
+
+
+        /**
+         * @param user {Object}
+         * @return {User}
+         */
+        static builder(user) {
+            let userTemp = new User();
+            userTemp.userId = user.userId;
+            userTemp.username = user.username;
+            userTemp.password = user.password;
+            userTemp.nickname = user.nickname;
+            userTemp.email = user.email;
+            userTemp.avatarPath = user.avatarPath;
+            userTemp.remark = user.remark;
+            userTemp.grade = user.grade;
+            return userTemp
+        }
+    }
+
+    class Group {
+        groupId = null;
+        groupName = null;
+        date = null;
+        announcement = null;
+        imagePath = null;
+    }
+
+    class Contact {
+        contactId = null;
+        type = null;
+        peerId = null;
+        remarkName = null;
+
+        static builder(contact) {
+            let temp = new Contact();
+            temp.type = contact.type;
+            temp.peerId = contact.peerId;
+            temp.remarkName = contact.remarkName;
+            if (contact.contactId == null) {
+                temp.contactId = temp.type + "^" + temp.peerId;
+            } else {
+                temp.contactId = contact.contactId;
+            }
+
+            return temp;
+        }
+    }
+
+    class Message {
+        messageHash = null;
+        date = null;
+        time = null;
+        content = null;
+        from = null;
+        to = null;
+        contactType = null;
+        showType = null; // " message || tip || timestamp "
+
+        /**
+         * @param content {String}
+         * @param from {String}
+         * @param to {String}
+         * @param contactType {'friend' | 'group'}
+         * @param showType {'message' | 'tip' | 'timestamp'}
+         * @return {Message}
+         */
+        static builder(content, from, to, contactType, showType) {
+            let message = new Message();
+            message.date = dateFormat("YYYY-mm-dd", new Date());
+            message.time = dateFormat("HH:MM:SS", new Date());
+            message.content = content;
+            message.from = from;
+            message.to = to;
+            message.contactType = contactType;
+            message.showType = showType;
+            message.messageHash = hex_md5(Math.floor(Math.random() * 10) + message.from + message.to + Date() + message.content);
+            return message;
+        }
+
+        /**
+         * @return {Message}
+         */
+        static buildFrom(data) {
+            let message = new Message();
+            message.date = data.date;
+            message.time = data.time;
+            message.content = data.content;
+            message.from = data.from;
+            message.to = data.to;
+            message.contactType = data.contactType;
+            message.showType = "message";
+            message.messageHash = data.messageHash;
+            return message;
+        }
+    }
+
+    class UserCache {
+        trigger = 0;
+
+        selfUser = new User();
+
+        /**
+         * 该用户ID
+         * @type {String}
+         */
+        userId = null;
+
+
+        /**
+         * 该用户token
+         * @type {String}
+         */
+        token = null;
+
+        /**
+         * 当前会话ID
+         * @type {String}
+         */
+        curDialogID = null;
+
+        /**
+         * 用户的信息
+         * @type {Map<String, User>}
+         * Key: userId
+         */
+        usersMap = new Map();
+
+        /**
+         * 通讯录
+         * @type {Map<String, Contact>}
+         * Key: contactId
+         */
+        contactsMap = new Map();
+
+        /**
+         * 消息
+         * @type {Map<String, Message[]>}
+         * Key: contactId
+         */
+        messagesMap = new Map();
+
+        /**
+         * 群
+         * @type {Map<String, Group>}
+         * Key: groupId
+         */
+        groupsMap = new Map();
+
+
+        /**
+         *
+         * @param userId {String}
+         * @param type {String}
+         */
+        getContactId(userId, type) {
+            return type + "^" + userId;
+        }
+
+
+        /**
+         * 建立用户信息
+         * @param users {User[]}
+         */
+        setUsersMap(users) {
+            users.forEach((item) => {
+                this.usersMap.set(item.userId, item);
+                console.log(item);
+            });
+            this.trigger++;
+        };
+
+
+        /**
+         * 建立通讯信息
+         * @param contacts {Contact[]}
+         */
+        setContactMap(contacts) {
+            contacts.forEach((item) => {
+                this.contactsMap.set(item.contactId, item);
+                console.log(item);
+            });
+            this.trigger++;
+        }
+
+
+        /**
+         * 推送消息
+         * @param messages {Message[]}
+         */
+        setMessages(messages) {
+            messages.forEach((item) => {
+                let contactIdTemp = null;
+                if (item.from === this.userId) {
+                    contactIdTemp = this.getContactId(item.to, item.contactType)
+                } else {
+                    contactIdTemp = this.getContactId(item.from, item.contactType)
+                }
+                let list = this.messagesMap.get(contactIdTemp);
+                if (list == null) {
+                    list = [];
+                    this.messagesMap.set(contactIdTemp, list);
+                }
+                list.push(item);
+            });
+            this.trigger++;
+        };
+
+
+        constructor() {
+        }
+    }
+
+
+    let app_moyu = new Vue({
+        el: '#app-moyu',
+        data: {
+            userCache: new UserCache(),
+            popShow: false,
+            popUserInfoShow: false,
+            sendContent: ''
+        },
+        created:
+            function () {
+                let self = this;
+                self.userCache.userId = getCookie('userId');
+                self.userCache.token = getCookie('token');
+                axiosGetUser(self.userCache, self.userCache.userId);
+                axiosGetContacts(self.userCache);
+            },
+        mounted: function () {
+            let self = this;
+            initEventSource(self.userCache.userId, self.userCache.token, null);
+        },
+        methods: {
+            listBeforeEnter: function (el) {
+                beforeAutoScrollToBottom();
+            },
+
+            listEnter: function (el, done) {
+                console.log(el);
+                autoScrollToBottom();
+            },
+
+            /**
+             * @param contact {Contact}
+             */
+            selectDialog: function (contact) {
+                this.userCache.curDialogID = contact.contactId;
+            },
+
+            /**
+             * @param e {String}
+             */
+            sendMessage: function (e) {
+                let type = this.userCache.contactsMap.get(this.userCache.curDialogID).type;
+                let to = this.userCache.contactsMap.get(this.userCache.curDialogID).peerId;
+                this.sendContent = document.getElementById(e).innerHTML;
+                if (this.sendContent === '') {
+                    alert("发送消息不能为空");
+                    return;
+                }
+                if (this.sendContent.length > 2048) {
+                    alert("发送消息太长了！");
+                    return;
+                }
+                let message = Message.builder(this.sendContent, this.userCache.userId, to, type, 'message');
+                axiosSetMessage(this.userCache, message, () => {
+                    this.userCache.setMessages([message]);
+                    document.getElementById(e).innerHTML = '';
+                });
+            },
+
+            showUserInfo: function (e) {
+                let chat = document.getElementById("chat-windows");
+                if (this.popShow) {
+                    chat.classList.remove("blured");
+                } else {
+                    chat.classList.add("blured");
+                }
+                this.popShow = !this.popShow;
+                this.popUserInfoShow = this.popShow;
+                console.log(e);
+                return false;
+            },
+            addEE: function () {
+                // self.location.href = "/vtest.html";
+                this.userCache.setMessages([Message.builder('hello1', '100001', this.userId, 'friend', 'message')]);
+            },
+            addEEE: function () {
+                this.userCache.setMessages([Message.builder('hello1', '100002', this.userId, 'friend', 'message')]);
+            },
+            addEEEE: function () {
+            }
+        }
+    });
+
+
+    function test() {
+        // console.log(app_moyu.userCache);
+        // console.log(app_moyu.userCache.usersMap.get(app_moyu.userCache.userId).nickname);
+
+
+    }
+
+
+    function initEventSource(userId, token, getNewMessageCallBack) {
+        if (typeof (EventSource) !== "undefined") {
+            let source = new EventSource("webapi/eventSource?userId=" + userId + "&token=" + token);
+
+            // 当通往服务器的连接被打开
+            source.onopen = function (event) {
+                console.log("eventSource opened!");
+                console.log(event);
+            };
+
+            // 当接收到消息。只能是事件名称是 message
+            source.onmessage = function (event) {
+                console.log(event.data);
+                let message = JSON.parse(event.data);
+                console.log(message);
+                app_moyu.userCache.setMessages([Message.buildFrom(message)]);
+
+            };
+
+            //可以是任意命名的事件名称
+            // source.addEventListener('newMessage', function(event) {
+            //
+            // });
+
+            // 当错误发生
+            source.onerror = function (event) {
+                console.log(event);
+            };
+            return true;
+        } else {
+            alert("Sorry, your browser does not support server-sent events");
+            return false;
+        }
+    }
+
+
+</script>
+</html>

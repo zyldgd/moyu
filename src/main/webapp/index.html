@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>moyu</title>
+    <script src="js/keyboard_shortcuts.js"></script>
+    <script src="js/statusCodes.js"></script>
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1405703_ewpwhdjifrn.css">
+    <style type="text/css">
+        .send-button {
+            border-radius: 10px;
+            position: relative;
+            text-align: center;
+            width: 50px;
+            line-height: 30px;
+            padding: 0 25px;
+            overflow: hidden;
+            z-index: 0;
+            cursor: pointer;
+            color: #ffffff;
+            text-shadow: #0009 0 0 3px;
+            margin: 5px 10px 5px auto
+        }
+
+        .send-button.raised {
+            transition: all 0.1s;
+            background: #027991;
+        }
+
+        .send-button.raised:active {
+            background: #515151;
+            box-shadow: 0 1px 1px #02495a;
+        }
+
+        .anim {
+            -webkit-transform: translateY(-50%) translateX(-50%);
+            transform: translateY(-50%) translateX(-50%);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            z-index: -1;
+        }
+
+        .anim:before {
+            position: relative;
+            content: '';
+            display: block;
+            margin-top: 100%;
+        }
+
+        .anim:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            border-radius: 50%;
+        }
+
+        .clickable .toggle:checked + .anim {
+            animation: anim-in 0.75s;
+        }
+
+        .clickable .toggle:checked + .anim:after {
+            animation: anim-in-pseudo 0.75s;
+        }
+
+        .clickable .toggle:not(:checked) + .anim {
+            animation: anim-out 0.75s;
+        }
+
+        .clickable .toggle:not(:checked) + .anim:after {
+            animation: anim-out-pseudo 0.75s;
+        }
+
+        .hoverable:hover > .anim {
+            animation: anim-out 0.75s;
+        }
+
+        .hoverable:hover > .anim:after {
+            animation: anim-out-pseudo 0.75s;
+        }
+
+        @keyframes anim-in {
+            0% {
+                width: 0%;
+            }
+            100% {
+                width: 100%;
+            }
+        }
+
+        @keyframes anim-in-pseudo {
+            0% {
+                background: rgba(0, 0, 0, 0.25);
+            }
+            100% {
+                background: transparent;
+            }
+        }
+
+        @keyframes anim-out {
+            0% {
+                width: 0%;
+            }
+            100% {
+                width: 100%;
+            }
+        }
+
+        @keyframes anim-out-pseudo {
+            0% {
+                background: rgba(0, 0, 0, 0.25);
+            }
+            100% {
+                background: transparent;
+            }
+        }
+
+    </style>
+    <style type="text/css">
+        html, body {
+            background-image: url("images/bg.jpg");
+            width: 100%;
+            height: 100%;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        ul, li, ol {
+            list-style: none;
+        }
+
+        #content-all {
+            padding-top: 100px;
+        }
+
+        #content-warp {
+            margin: auto;
+            max-width: 850px;
+            width: 850px;
+            height: 600px;
+            display: flex;
+            border: #000000 solid 1px;
+            box-shadow: #00000082 0 0 10px 0px;
+        }
+
+        #left-warp {
+            padding-top: 20px;
+            text-align: center;
+            min-width: 150px;
+            background-color: #027991;
+            /*background-image: url("images/bg.jpg");*/
+            flex: 1;
+        }
+
+        #right-warp {
+            min-width: 500px;
+            background-color: #f1f1f1;
+            flex: 5;
+        }
+
+        #top-warp {
+            font-weight: bold;
+            color: #adadad;
+            padding: 2px 10px;
+            font-size: 15px;
+            font-family: 微软雅黑, sans-serif;
+            height: auto;
+            background-color: #eaeaea;
+        }
+
+        #mid-warp {
+            /*noinspection CssInvalidPropertyValue*/
+            overflow: overlay;
+            overflow-x: hidden;
+            height: 65%;
+            /*background-color: #ddf9d2;*/
+        }
+
+        #bottom-warp {
+            font-size: 1em;
+            height: 30%;
+            background-color: #f1f1f1;
+        }
+
+
+        #chat-list {
+            list-style: none
+        }
+
+        .chat-line {
+            margin: 10px 0;
+            display: grid;
+            grid-template-columns: 70px auto;
+        }
+
+        .chat-avatar {
+            text-align: center;
+        }
+
+        .chat-content {
+            padding: 0 5px;
+        }
+
+        .chat-content-word {
+            display: inline-block;
+            min-width: 20px;
+            max-width: 500px;
+            border-radius: 3px;
+            background-color: white;
+            box-shadow: #00000014 0 0 6px 0;
+            padding: 7px 10px;
+            color: #656565;
+            word-break: break-all;
+        }
+
+        .chat-content-word pre {
+            font-family: 微软雅黑, sans-serif;
+            max-width: 470px;
+            font-size: 14px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .chat-avatar-img {
+            margin-top: 10px;
+            background: white;
+            border-radius: 50%;
+            width: 50px;
+        }
+
+        .chat-content-info {
+            padding: 2px;
+            color: #bdbdbd;
+            font-size: xx-small;
+        }
+
+        .chat-line-right {
+            margin: 10px 0;
+            display: grid;
+            grid-template-columns: auto 70px;
+        }
+
+        .chat-line-right .chat-content {
+            text-align: right;
+        }
+
+        .chat-line-right .chat-content-word {
+            margin: auto 0 0 auto;
+        }
+
+        .chat-line-right .chat-content-word {
+            text-align: left;
+            color: white;
+            background-color: #027991;
+        }
+
+        #mid-warp::-webkit-scrollbar { /*滚动条整体样式*/
+            width: 4px; /*高宽分别对应横竖滚动条的尺寸*/
+            height: 1px;
+        }
+
+        #mid-warp::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+            border-radius: 10px;
+            /*background: #CCCCCC;*/
+        }
+
+        #mid-warp:hover::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+            /*border-radius: 10px;*/
+            background: #CCCCCC;
+        }
+
+        #mid-warp::-webkit-scrollbar-track { /*滚动条里面轨道*/
+
+        }
+
+        #bottom-warp-tool {
+            height: 15%;
+            border-top: #e2e2e2 1px solid;
+        }
+
+        #bottom-warp-text {
+            height: 50%;
+            padding: 10px;
+            background-color: #f1f1f1;
+        }
+
+        #text-send-message {
+            font-family: 微软雅黑, sans-serif;
+            color: #4e4e4e;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            border-radius: 5px;
+            resize: none;
+            outline: none;
+            background-color: initial;
+        }
+
+        #bottom-warp-button {
+            text-align: right;
+        }
+
+        .input-name {
+            opacity: 0.5;
+            border-radius: 20px;
+            height: 30px;
+            width: 50px;
+            outline: none;
+            border: 0;
+            padding: 1px 10px;
+            font-family: 微软雅黑, sans-serif;
+            font-weight: bolder;
+            font-size: larger;
+            color: #15394f;
+            margin: 60px auto;
+        }
+
+        .input-name::-webkit-input-placeholder { /* WebKit browsers */
+            color: #b1b1b1;
+            font-weight: normal;
+        }
+
+        .input-name:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+            color: #b1b1b1;
+            font-weight: normal;
+        }
+
+        .input-name::-moz-placeholder { /* Mozilla Firefox 19+ */
+            color: #b1b1b1;
+            font-weight: normal;
+        }
+
+        .input-name::-ms-input-placeholder { /* Internet Explorer 10+ */
+            color: #b1b1b1;
+            font-weight: normal;
+        }
+
+        .chat-tip {
+            margin: 5px auto;
+            text-align: center;
+        }
+
+        .chat-tip span {
+            font-size: x-small;
+            color: #919191;
+            font-family: 微软雅黑, sans-serif;
+            background-color: #dddddd;
+            border-radius: 10px;
+            padding: 2px 10px;
+        }
+
+
+    </style>
+    <style type="text/css">
+        .set_15_social-button {
+            display: inline-block;
+            background-color: #fff;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            line-height: 60px;
+            border: 2px white solid;
+            /*margin: 0 10px;*/
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            opacity: .99;
+            border-radius: 50%;
+            /*box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.05);*/
+            -webkit-transition: all 0.35s cubic-bezier(0.31, -0.105, 0.43, 1.59);
+            transition: all 0.35s cubic-bezier(0.31, -0.105, 0.43, 1.59);
+        }
+
+        .set_15_social-button:before {
+            content: '';
+            background-color: #000;
+            width: 120%;
+            height: 120%;
+            position: absolute;
+            top: 90%;
+            left: -110%;
+            -webkit-transform: rotate(45deg);
+            transform: rotate(45deg);
+            -webkit-transition: all 0.35s cubic-bezier(0.31, -0.105, 0.43, 1.59);
+            transition: all 0.35s cubic-bezier(0.31, -0.105, 0.43, 1.59);
+        }
+
+        .set_15_social-button .fa {
+            font-size: 38px;
+            /*vertical-align: middle;*/
+            -webkit-transform: scale(0.8);
+            transform: scale(0.8);
+            -webkit-transition: all 0.35s cubic-bezier(0.31, -0.105, 0.43, 1.59);
+            transition: all 0.35s cubic-bezier(0.31, -0.105, 0.43, 1.59);
+        }
+
+        .set_15_social-button.Vskype:before {
+            background-color: #027991;
+        }
+
+        .set_15_social-button.Vskype .fa {
+            color: #027991;
+        }
+
+        .set_15_social-button:focus:before, .set_15_social-button:hover:before {
+            top: -10%;
+            left: -10%;
+            z-index: -999;
+        }
+
+        .set_15_social-button:focus .fa, .set_15_social-button:hover .fa {
+            color: #fff;
+            -webkit-transform: scale(1);
+            transform: scale(1);
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="content-all">
+    <div id="content-warp">
+        <div id="left-warp">
+            <div>
+                <input class="input-name" type="text" id="username" name="username" style="width: 100px"
+                       placeholder="名字">
+            </div>
+            <div class="set_15_social-button Vskype" onclick="login()">
+                <i class="fa fa-skype iconfont iconqunfengfabushangxian"></i>
+            </div>
+        </div>
+        <div id="right-warp">
+            <div id="top-warp"> SDN 群</div>
+            <div id="mid-warp">
+                <ul id="chat-list">
+                    <!--<li class="chat-tip">-->
+                    <!--<span>123</span>-->
+                    <!--</li>-->
+
+                    <!--<li class="chat-line">-->
+                    <!--<div class="chat-avatar">-->
+                    <!--<img class="chat-avatar-img" src="http://101.200.151.183:8080/img/user (3).png" alt="头像">-->
+                    <!--</div>-->
+                    <!--<div class="chat-content">-->
+                    <!--<div class="chat-content-info">阿斯顿</div>-->
+                    <!--<div class="chat-content-word">-->
+                    <!--<pre>敌以带我丢我达克赛德UI奥斯迪阿武哥</pre>-->
+                    <!--</div>-->
+                    <!--</div>-->
+                    <!--</li>-->
+
+                    <!--<li class="chat-line-right">-->
+                    <!--<div class="chat-content">-->
+                    <!--<div class="chat-content-info">阿斯顿</div>-->
+                    <!--<div class="chat-content-word">-->
+                    <!--<pre>asdasa</pre>-->
+                    <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="chat-avatar">-->
+                    <!--<img class="chat-avatar-img" src="http://101.200.151.183:8080/img/user (3).png" alt="头像">-->
+                    <!--</div>-->
+                    <!--</li>-->
+                </ul>
+            </div>
+            <div id="bottom-warp">
+                <div id="bottom-warp-tool">
+
+                </div>
+                <div id="bottom-warp-text">
+                    <textarea id="text-send-message" name="content" placeholder="发送内容 (Ctrl+Enter 换行)"></textarea>
+                </div>
+                <div id="bottom-warp-button" onclick="send()">
+                    <div class="send-button raised hoverable">
+                        <div class="anim"></div>
+                        <span>发送</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script>
+    function add_chat_tip(massage) {
+        let chat_list = document.getElementById("chat-list");
+        let li_list = document.createElement("li");
+        let span = document.createElement("span");
+
+        li_list.classList.add("chat-tip");
+        span.innerText = massage;
+        li_list.appendChild(span);
+        chat_list.appendChild(li_list);
+    }
+
+    function add_chat_line(self, user_avatar_src, username, message) {
+        let chat_list = document.getElementById("chat-list");
+        let li_list = document.createElement("li");
+        let div_avatar = document.createElement("div");
+        let img_avatar = document.createElement("img");
+        let div_content = document.createElement("div");
+        let div_info = document.createElement("div");
+        let div_word = document.createElement("div");
+        let pre = document.createElement("pre");
+
+        if (self === true) {
+            li_list.classList.add("chat-line-right");
+        } else {
+            li_list.classList.add("chat-line");
+        }
+
+        div_avatar.classList.add("chat-avatar");
+        img_avatar.classList.add("chat-avatar-img");
+        div_content.classList.add("chat-content");
+        div_info.classList.add("chat-content-info");
+        div_word.classList.add("chat-content-word");
+
+        img_avatar.src = user_avatar_src;
+        div_info.innerText = username;
+        pre.innerText = message;
+
+        div_word.appendChild(pre);
+        div_avatar.appendChild(img_avatar);
+        div_content.appendChild(div_info);
+        div_content.appendChild(div_word);
+        if (self === true) {
+            li_list.appendChild(div_content);
+            li_list.appendChild(div_avatar);
+
+        } else {
+            li_list.appendChild(div_avatar);
+            li_list.appendChild(div_content);
+        }
+
+        chat_list.appendChild(li_list);
+        document.getElementById("mid-warp").scrollTop = document.getElementById("mid-warp").scrollHeight;
+    }
+</script>
+
+<script>
+
+    /******************************************************************************************/
+
+    let source = null;
+    let logined = false;
+    let username = "user";
+
+    function login() {
+        let user = document.getElementById("username").value;
+        if (user === "") {
+            alert("用户名不能为空！");
+            return;
+        }
+
+        if (!logined) {
+            logined = init(user);
+            if (logined) {
+                username = user;
+                add_chat_tip("您已上线");
+                console.log("online")
+            }
+        } else {
+            destroy(user);
+            logined = false;
+            add_chat_tip("您已下线");
+            console.log("offline")
+
+        }
+
+
+    }
+
+    function init(token) {
+        if (typeof (EventSource) !== "undefined") {
+
+            source = new EventSource("webapi/chat/broadcast?token=" + token);
+
+            // 当通往服务器的连接被打开
+            source.onopen = function (event) {
+            };
+
+            // 当接收到消息。只能是事件名称是 message
+            source.onmessage = function (event) {
+                console.log(event);
+                let message = JSON.parse(event.data);
+                add_chat_line(message.source === token, "images/avatar.jpeg", message.source, message.content);
+            };
+
+            //可以是任意命名的事件名称
+            /*
+            source.addEventListener('message', function(event) {
+                 var ta = document.getElementById('response_text');
+                 ta.value = ta.value + '\n' + event.data;
+            });
+            */
+
+            // 当错误发生
+            source.onerror = function (event) {
+                console.log(event);
+                response_text.value += '\n' + "连接出错！";
+            };
+
+            return true;
+        } else {
+            alert("Sorry, your browser does not support server-sent events");
+            return false;
+        }
+    }
+
+    function destroy(token) {
+        let xmlHttpRequest;
+        if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlHttpRequest = new XMLHttpRequest();
+        } else {// code for IE6, IE5
+            xmlHttpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+        xmlHttpRequest.open("DELETE", "webapi/chat/broadcast", true);
+        xmlHttpRequest.setRequestHeader("Authorization", "Basic " + token);
+        xmlHttpRequest.send();
+    }
+
+    function send() {
+        let text_send_massage = document.getElementById("text-send-message");
+        let content = text_send_massage.value;
+
+        if (!logined) {
+            alert("请先登录！");
+            return;
+        }
+
+        if (content === "") {
+            alert("请输入发送内容");
+            return;
+        }
+
+        let xmlHttpRequest;
+        if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlHttpRequest = new XMLHttpRequest();
+        } else {// code for IE6, IE5
+            xmlHttpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+        let message = {
+            content: content,
+            date: dateFormat("YYYY-mm-dd", new Date()),
+            time: dateFormat("HH:MM:SS", new Date()),
+            source: username,
+            destination: "sdn",
+            messageType: "BROADCAST"
+        };
+
+        xmlHttpRequest.open("POST", "webapi/chat/broadcast", true);
+        xmlHttpRequest.setRequestHeader("Content-Type", "application/json");
+        xmlHttpRequest.setRequestHeader("Authorization", "Basic " + username);
+        let str = JSON.stringify(message);
+        console.log(message);
+        xmlHttpRequest.send(str);
+
+        text_send_massage.value = "";
+    }
+
+    function dateFormat(fmt, date) {
+        let ret;
+        let opt = {
+            "Y+": date.getFullYear().toString(),        // 年
+            "m+": (date.getMonth() + 1).toString(),     // 月
+            "d+": date.getDate().toString(),            // 日
+            "H+": date.getHours().toString(),           // 时
+            "M+": date.getMinutes().toString(),         // 分
+            "S+": date.getSeconds().toString()          // 秒
+        };
+        for (let k in opt) {
+            ret = new RegExp("(" + k + ")").exec(fmt);
+            if (ret) {
+                fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
+            }
+        }
+        return fmt;
+    }
+
+    shortcut.add("Ctrl+Enter", function () {
+        document.getElementById("text-send-message").value += "\n";
+    });
+
+    shortcut.add("Enter", function () {
+        document.getElementById("bottom-warp-button").click();
+    });
+
+
+</script>
+
+</html>
